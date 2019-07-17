@@ -8,7 +8,7 @@ function setup_elasticsearch() {
 	sudo apt-get install elasticsearch
 	less /vagrant/elasticsearch.yml > /etc/elasticsearch/elasticsearch.yml 
 	sudo /bin/systemctl enable elasticsearch.service
-	sudo systemctl start elasticsearch.service
+
 
 	# Let's create a filesystem for elasticsearch index /var/lib/elasticsearch in this case ;) g n enter enter enter t y 31  p w
 	sfdisk /dev/sdc < /vagrant/lvm_part_table
@@ -16,12 +16,10 @@ function setup_elasticsearch() {
 	vgcreate elk_vg /dev/sdc1
 	lvcreate -l 100%FREE elk_vg -n elasticsearch_data
 	mkfs.ext4 /dev/elk_vg/elasticsearch_data
-	mount /dev/elk_vg/elasticsearch_data /var/lib/elasticsearch
-	#pvcreate /dev/sda1
-	#fdisk  /dev/sda1
-	#mkfs.ext4 /dev/sda1
-	#mount /dev/sda1 /var/lib/elasticsearch
-	#echo "/dev/sda1 /var/lib/elasticsearch ext4 defaults 0 0" >> /etc/fstab
+	mount /dev/elk_vg/elasticsearch_data /var/lib/elasticsearch 
+	echo "/dev/elk_vg/elasticsearch_data     ext4    defaults    0 0" >> /etc/fstab
+	chown -R elasticsearch:elasticsearch /var/lib/elasticsearch
+	sudo systemctl restart elasticsearch.service
 }
 
 
@@ -36,9 +34,9 @@ function setup_nginx() {
 }
 
 function setup_java() {
+	sudo apt update
 	sudo apt install default-jre
-	sudo apt install default-jre
-
+	sudo apt install default-jdk
 }
 
 function setup_logstash() {
@@ -58,7 +56,7 @@ function setup_kibana() {
 
 if [ ! -f /etc/java-*/accessibility.properties ]; then
 	setup_java
-fi	
+fi
 
 if [ ! -f /etc/elasticsearch/elasticsearch.yml ]; then
     setup_elasticsearch
@@ -72,3 +70,5 @@ if [ ! -d /etc/kibana ]; then
 	setup_nginx
 	setup_kibana
 fi
+
+exit 0

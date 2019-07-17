@@ -14,13 +14,13 @@
 #
 # Use a descriptive name for your cluster:
 #
-cluster.name: instapybot-cluster
+#cluster.name: instapybot-cluster
 #
 # ------------------------------------ Node ------------------------------------
 #
 # Use a descriptive name for the node:
 #
-node.name: "instapybot-node1"
+#node.name: "instapybot-node1"
 #
 # Add custom attributes to the node:
 #
